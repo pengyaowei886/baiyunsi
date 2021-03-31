@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>自动生成发票系统</title>
+</head>
+
+<body>
+    <h2 align="center">
+        <font color=red>自动生成发票系统</font>
+    </h2>
+    <form id="message" method="post">
+        <table align="center" border="1">
+            <tr>
+                <td>金额:</td>
+                <td><input type="text" name="studentId"></td>
+            </tr>
+            <tr>
+                <td><input type="button" value="确定" onclick="login()"></td>
+            </tr>
+        </table>
+    </form>
+    <ul id="demo" align-items: center></ul>
+</body>
+<script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script>
+    function login() {
+
+        var studentId = document.getElementsByName("studentId");
+        var params = {};
+        params.money = studentId[0].value;
+        console.log(params);
+        $.ajax({
+            type: 'post',
+            url: "http://192.168.0.108:7001/money",
+            data: params,
+            datatype: 'json',
+            success: function (data) {
+                console.log(data);
+                if (data.code == 0) {
+                    // 获取ul
+                    let UL = document.getElementById('demo');
+
+                    // 遍历循环data数据
+                    for (let i = 0; i < data.data.length; i++) {
+                        // 创建li元素
+                        var LI = document.createElement('li');
+                        // 放入数据(data)
+                        // 这里使用ES6字符串模板特性来做
+                        LI.innerHTML = `
+    <li>${data.data[i].introduce}</li> 
+    <b>${data.data[i].money} * </b>  <b>${data.data[i].num} =</b> 
+    <b>${data.data[i].allmoney}</b>
+    `
+                        // 放入(ul)
+                        UL.appendChild(LI);
+                    }
+                    var LI = document.createElement('li');
+                    // 放入数据(data)
+                    // 这里使用ES6字符串模板特性来做
+                    LI.innerHTML = `
+    <li>总金额</li> 
+    <b>${data.allmoney} </b>  `
+                    // 放入(ul)
+                    UL.appendChild(LI);
+                } else {
+                    alert("帐号错误，登陆失败！");
+                }
+            }
+        });
+    };
+</script>
+
+</html>
